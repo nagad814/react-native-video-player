@@ -118,6 +118,7 @@ export default class VideoPlayer extends Component {
     this.onSeekGrant = this.onSeekGrant.bind(this);
     this.onSeekRelease = this.onSeekRelease.bind(this);
     this.onSeek = this.onSeek.bind(this);
+    this.onClose = this.onClose.bind(this);
   }
 
   componentDidMount() {
@@ -216,6 +217,13 @@ export default class VideoPlayer extends Component {
     this.player.presentFullscreenPlayer();
   }
 
+  onClose() {
+    if(this.props.onClose){
+            this.props.onClose();
+    }
+  this.showControls();
+}
+
   onSeekBarLayout({ nativeEvent }) {
     const customStyle = this.props.customStyles.seekBar;
     let padding = 0;
@@ -307,6 +315,18 @@ export default class VideoPlayer extends Component {
     });
     this.hideControls();
   }
+  renderCloseButton () {
+    return (
+      <TouchableOpacity
+          style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+          position: 'absolute',
+          top: 10,
+          left: 10,}} onPress={this.onClose}>
+      <Icon style={{}} name="close" size={30} color ="#fefefe" />
+      </TouchableOpacity>
+    );
+  }
 
   renderStartButton() {
     const { customStyles } = this.props;
@@ -333,6 +353,7 @@ export default class VideoPlayer extends Component {
         ]}
         source={thumbnail}
       >
+        {this.renderCloseButton()}
         {this.renderStartButton()}
       </BackgroundImage>
     );
@@ -469,6 +490,8 @@ export default class VideoPlayer extends Component {
           />
         </View>
         {((!this.state.isPlaying) || this.state.isControlsVisible)
+          ? this.renderCloseButton() : null}
+        {((!this.state.isPlaying) || this.state.isControlsVisible)
           ? this.renderControls() : this.renderSeekBar(true)}
       </View>
     );
@@ -545,6 +568,7 @@ VideoPlayer.propTypes = {
   onPlayPress: PropTypes.func,
   onHideControls: PropTypes.func,
   onShowControls: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 VideoPlayer.defaultProps = {
